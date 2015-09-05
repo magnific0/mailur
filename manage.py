@@ -388,6 +388,7 @@ def get_full(argv):
             # libs
             '   normalize.css'
             '   react'
+            '   mousetrap'
         ))
 
     cmd('static').exe(lambda a: sh(
