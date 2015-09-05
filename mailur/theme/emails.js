@@ -40,7 +40,7 @@ class EmailLine extends React.Component {
     }
 }
 
-if (emails) {
-  let items = emails['emails?']['items'];
+export function render(data) {
+  let items = data['emails?']['items'];
   React.render(<EmailList items={items}/>, document.querySelector('.body'))
 }

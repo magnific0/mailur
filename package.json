@@ -18,7 +18,7 @@
   "eslintConfig": {
     "parser": "babel-eslint",
     "rules": {
-      "strict": 1
+      "strict": 0
     },
     "plugins": [
       "react"

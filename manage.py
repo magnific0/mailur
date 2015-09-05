@@ -401,7 +401,8 @@ def get_full(argv):
         'csso {0}build/all.css {0}build/all.min.css &&'
         # all.js
         'browserify -d -t [ babelify ]'
-        '   mailur/theme/emails.js'
+        '   -r ./mailur/theme/emails.js:emails'
+        '   -r ./mailur/theme/sidebar.js:sidebar'
         '   > {0}build/all.js &&'
         # 'cat'
         # '   node_modules/jquery/dist/jquery.js'
