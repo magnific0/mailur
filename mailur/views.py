@@ -103,32 +103,15 @@ def adapt_page():
     return wrapper
 
 
-def adapt_fmt(tpl, formats=None):
-    formats = formats or ['html', 'body', 'json']
-
-    def inner(env, *a, **kw):
-        default = 'body' if env.request.is_xhr else kw.pop('fmt', formats[0])
-        fmt = env.request.args.get('fmt', default)
-        assert fmt in formats
-
-        ctx = wrapper.func(env, *a, **kw)
-        if fmt == 'json':
-            return env.to_json(ctx)
-        elif fmt == 'body':
-            return render(env, tpl, ctx)
-        return render_body(env, tpl, ctx, with_sidebar=True)
-
-    def wrapper(func):
-        wrapper.func = func
-        return ft.wraps(func)(inner)
-    return wrapper
-
-
 def render(env, name, ctx):
-    return env.render('body', {'name': name, 'ctx': json.dumps(ctx)})
+    return env.render(name, ctx)
 
 
-def render_body(env, name, ctx=None, with_sidebar=False):
+def render_react(env, name, ctx):
+    return env.render('react', {'name': name, 'ctx': json.dumps(ctx)})
+
+
+def render_body(env, name, ctx=None, render=render, with_sidebar=False):
     body = render(env, name, ctx)
     fname = 'all' if env('debug') else 'all.min'
     ctx = {
@@ -142,6 +125,27 @@ def render_body(env, name, ctx=None, with_sidebar=False):
     if with_sidebar:
         ctx['sidebar'] = sidebar(env)
     return env.render('base', ctx)
+
+
+def adapt_fmt(tpl, formats=None, render=render):
+    formats = formats or ['html', 'body', 'json']
+
+    def inner(env, *a, **kw):
+        default = 'body' if env.request.is_xhr else kw.pop('fmt', formats[0])
+        fmt = env.request.args.get('fmt', default)
+        assert fmt in formats
+
+        ctx = wrapper.func(env, *a, **kw)
+        if fmt == 'json':
+            return env.to_json(ctx)
+        elif fmt == 'body':
+            return render(env, tpl, ctx)
+        return render_body(env, tpl, ctx, render, with_sidebar=True)
+
+    def wrapper(func):
+        wrapper.func = func
+        return ft.wraps(func)(inner)
+    return wrapper
 
 
 def reset_password(env, username=None, token=None):
@@ -177,7 +181,7 @@ def check_auth(env):
 
 
 @login_required
-@adapt_fmt('sidebar', formats=['body', 'json'])
+@adapt_fmt('sidebar', formats=['body', 'json'], render=render_react)
 def sidebar(env):
     i = env.sql('''
     WITH labels(name) AS (SELECT DISTINCT unnest(labels) FROM emails)
@@ -384,7 +388,7 @@ def ctx_quote(env, msg, forward=False):
 
 
 @login_required
-@adapt_fmt('emails')
+@adapt_fmt('emails', render=render_react)
 def thread(env, id):
     i = env.sql('''
     SELECT
@@ -425,7 +429,7 @@ def thread(env, id):
 
 
 @login_required
-@adapt_fmt('emails')
+@adapt_fmt('emails', render=render_react)
 @adapt_page()
 def emails(env, page):
     schema = v.parse({
@@ -517,7 +521,7 @@ def emails(env, page):
 
 
 @login_required
-@adapt_fmt('emails')
+@adapt_fmt('emails', render=render_react)
 def search(env):
     schema = v.parse({'+q': str})
     q = schema.validate(env.request.args)['q']
@@ -559,7 +563,7 @@ def search(env):
 
 
 @login_required
-@adapt_fmt('emails')
+@adapt_fmt('emails', render=render_react)
 def body(env, id):
     def parse(raw, id):
         return parser.parse(env, raw.tobytes(), id)
