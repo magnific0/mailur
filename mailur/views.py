@@ -115,7 +115,7 @@ def adapt_fmt(tpl, formats=None):
         if fmt == 'json':
             return env.to_json(ctx)
         elif fmt == 'body':
-            return env.render(tpl, ctx)
+            return render(env, tpl, ctx)
         return render_body(env, tpl, ctx, with_sidebar=True)
 
     def wrapper(func):
@@ -124,20 +124,23 @@ def adapt_fmt(tpl, formats=None):
     return wrapper
 
 
+def render(env, name, ctx):
+    return env.render('body', {'name': name, 'ctx': json.dumps(ctx)})
+
+
 def render_body(env, name, ctx=None, with_sidebar=False):
-    body = env.render(name, ctx)
-    name = 'all' if env('debug') else 'all.min'
+    body = render(env, name, ctx)
+    fname = 'all' if env('debug') else 'all.min'
     ctx = {
         'body': body,
-        'cssfile': '/theme/build/%s.css?%s' % (name, env.theme_version),
-        'jsfile': '/theme/build/%s.js?%s' % (name, env.theme_version),
+        'cssfile': '/theme/build/%s.css?%s' % (fname, env.theme_version),
+        'jsfile': '/theme/build/%s.js?%s' % (fname, env.theme_version),
         'ga_id': env('ui_ga_id'),
         'host_ws': env('host_ws'),
         'host_web': env('host_web'),
     }
     if with_sidebar:
         ctx['sidebar'] = sidebar(env)
-
     return env.render('base', ctx)
 
 
