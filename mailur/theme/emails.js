@@ -1,7 +1,7 @@
 import React from "react";
 
 class EmailList extends React.Component {
-    render = () => {
+    render() {
         let v = this.props;
 
         return (
@@ -15,9 +15,8 @@ class EmailList extends React.Component {
 }
 
 class EmailLine extends React.Component {
-    render = () => {
-    let v = this.props,
-        pic = {backgroundImage: `url(${v.fr.image})`};
+    render() {
+    let v = this.props;
     return (
     <li className="email">
     <ul className="email-line">
@@ -27,9 +26,12 @@ class EmailLine extends React.Component {
             : <li className="email-pin" title="Toggle Pin"></li>
         }
         <li className="email-pick"><input type="checkbox" className="mousetrap"/></li>
-        <li className="email-pic email-info" style={pic}></li>
+        <li
+            className="email-pic email-info"
+            style={{backgroundImage: `url(${v.fr.image})`}}
+        ></li>
         <li className="email-from email-info" title={v.fr.full}>{v.fr.short}</li>
-        <li className={'email-subj email-info' + v.subj_changed ? ' email-subj-changed': ''}>
+        <li className={'email-subj email-info' + v.subj_changed ? ' email-subj-changed' : ''}>
             <a href="#">{v.subj_human}</a>
         </li>
         <li className="email-preview email-info">{v.preview}</li>
@@ -42,5 +44,5 @@ class EmailLine extends React.Component {
 
 if (emails) {
     let items = emails['emails?']['items'];
-    React.render(<EmailList items={items}/>, document.querySelector('body'))
+    React.render(<EmailList items={items}/>, document.querySelector('.body'))
 }

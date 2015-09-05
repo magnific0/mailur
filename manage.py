@@ -375,33 +375,33 @@ def get_full(argv):
     cmd('npm', help='update nodejs packages')\
         .exe(lambda a: sh(
             'npm install --save --save-exact'
-            '   autoprefixer'
-            '   csso'
             '   less'
+            '   less-plugin-autoprefix'
+            '   csso'
+            '   browserify'
+            '   babelify'
             '   uglify-js'
-            '   jshint'
-            # js libs
-            '   jquery'
+            # lint
+            '   eslint'
+            '   babel-eslint'
+            '   eslint-plugin-react'
+            # libs
             '   normalize.css'
-            '   mousetrap'
-            '   selectize'
-            '   wjbryant/taboverride'
-            '   naskoro/swipebox'
+            '   react'
         ))
 
     cmd('static').exe(lambda a: sh(
         # all.css
-        'lessc {0}styles.less {0}build/styles.css &&'
+        'lessc --autoprefix {0}styles.less {0}build/styles.css &&'
         'cat'
         '   node_modules/normalize.css/normalize.css'
         '   {0}lib/selectize.css'
         '   {0}build/styles.css'
         '   > {0}build/all.css &&'
-        'autoprefixer {0}build/all.css {0}build/all.css &&'
         'csso {0}build/all.css {0}build/all.min.css &&'
         # all.js
-        'browserify -d -t [ babelify --stage 0 ]'
-        '   mailur/theme/emails.jsx'
+        'browserify -d -t [ babelify ]'
+        '   mailur/theme/emails.js'
         '   > {0}build/all.js &&'
         # 'cat'
         # '   node_modules/jquery/dist/jquery.js'
