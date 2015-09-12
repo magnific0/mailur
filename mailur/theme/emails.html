@@ -1,0 +1,99 @@
+<raw>
+<span></span>
+
+<script>
+this.root.innerHTML = opts.content
+</script>
+</raw>
+<header>
+<div class="header">
+    <h3>{v.subj}</h3>
+    <div if={v.buttons} class="email-labels-edit">
+        <button each={v.buttons} class="email-b-{{name}}" title="{{title}}"
+            data-label="{label}"
+            data-action="{action}"
+        ></button>
+        <div each={v.labels} class="email-labels-wrap">
+        <input
+            class="email-labels-input"
+            data-items="{items_json}"
+            data-all="{all_json}"
+            data-base-url="{base_url}"
+        >
+        <button class="email-labels-ok"></button>
+        <button class="email-labels-cancel"></button>
+        </div>
+    </div>
+    <script type="es6">
+    this.v = opts.header;
+    </script>
+</div>
+</header>
+
+<emails>
+<header if={v.header} header={v.header}/>
+<ul if={v.emails} class="emails {thread: v.thread}" data-last="{v.last}">
+<li each={v.emails.items} class="email {
+    'email-unread': unread,
+    'email-pinned': pinned,
+    'email-show email-showed': body.show
+}">
+    <ul class="email-line">
+        <li if={draft} class="email-draft">Draft</li>
+        <li if={!draft} class="email-pin" on-click="pin" title="Toggle Pin"></li>
+        <li class="email-pick"><input type="checkbox" class="mousetrap"></li>
+        <li class="email-pic" style="background-image:url({{fr.image}})"></li>
+        <li class="email-from" title="{fr.full}">{fr.short}</li>
+        <li if={labels} class="email-labels">
+            <a each={labels.items} href="{url}" on-click="go">{name}&nbsp;</a>
+        </li>
+        <li class="email-info" on-click="get-or-go">
+            <span if={count} class="email-count">{count}</span>
+            <a href="{url}" class="email-subj {'email-subj-changed': subj_changed}">
+                {subj_human}
+            </a>
+            <span class="email-preview">{preview}</span>
+            <span class="email-expander">&nbsp;</span>
+            <span class="email-time" title="{time}">{time_human}</span>
+        </li>
+    </ul>
+    <div if={body} class="email-body">
+        <div if={body.show} class="email-details">
+            <div class="email-actions">
+                <a href="#" on-click="details">Details</a>
+                <a if={to_all} href="{body.links.replyall}" on-click="go">Reply to all</a>
+                <a href="{body.links.reply}" on-click="go">Reply</a>
+                <a href="{{links.forward}}" on-click="go">Forward</a>
+                <a if="{v.emails.length > 1}" href="{body.links.body}" on-click="go">Show this message</a>
+                <a if="{v.emails.length > 1}" href="#" on-click="extract">Extract new thread</a>
+                <a href="#" on-click="delete">Delete this message</a>
+                <a href="{body.links.raw}" on-click="go">Show original</a>
+            </div>
+            <div if="{body.details}" class="email-extra">
+                <img  src="{fr.image}">
+                <ul>
+                    <li>Subject: <a href="{subj_url}" title="Filter by subject">{subj}</a></li>
+                    <li>From: <a href="{fr.url}" title="Filter by person">{fr.full}</a></li>
+                    <li>To: <span each={to}><a href="{url}" title="Filter by person">{full}</a>&nbsp;</span></li>
+                    <li>Cc: <span each={cc}><a href="{url}" title="Filter by person">{full}</a>&nbsp;</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="email-text" decorator="quotes"><raw content="{body.text}"/></div>
+        <div if="{body.attachments}" class="email-attachments">
+            <ul each="{body.attachments.items}">
+                <li><a class="email-f-{maintype}" href="{url}" title="{name}" target="_blank">{name}</a></li>
+            </ul>
+        </div>
+        <div if="{!body}" class="email-text">
+            <b>Loading...</b>
+        </div>
+    </div>
+</li>
+<li if="{next}" class="emails-more"><a href="{next.url}">Next page</a></li>
+</ul>
+<script type="es6">
+this.v = opts
+console.log(this);
+</script>
+</emails>

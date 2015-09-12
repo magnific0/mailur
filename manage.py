@@ -407,7 +407,8 @@ def get_full(argv):
         'postcss --use autoprefixer -o {0}build/all.css {0}build/all.css &&'
         'cleancss {0}build/all.css -o {0}build/all.min.css &&'
         # all.js
-        'browserify -d -o {0}build/all.js {0}app2.js &&'
+        'riot -m --ext html mailur/theme/emails.html mailur/theme/build/app.js &&'
+        'browserify -d -o {0}build/all.js {0}build/app.js {0}app3.js &&'
         # 'cat'
         # '   node_modules/jquery/dist/jquery.js'
         # '   node_modules/mousetrap/mousetrap.js'

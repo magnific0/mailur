@@ -56,6 +56,11 @@ class WebEnv(Env):
             n.stem: self.load_asset(n)
             for n in self.theme_dir.glob('*.mustache')
         }
+        self.tags = {
+            self.load_asset(n)
+            for n in self.theme_dir.glob('*.html')
+            if n.stem in ['emails']
+        }
 
     def set_request(self, request):
         self.request = request

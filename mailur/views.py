@@ -52,9 +52,6 @@ def adapt_fmt(tpl=None):
     def inner(env, *a, **kw):
         default = 'json' if env.request.is_xhr else kw.pop('fmt', 'html')
         fmt = env.request.args.get('fmt', default)
-        if fmt == 'html' and tpl:
-            return render_base(env)
-
         ctx = wrapper.func(env, *a, **kw)
         if isinstance(ctx, env.Response):
             return ctx
@@ -63,6 +60,8 @@ def adapt_fmt(tpl=None):
             if tpl:
                 ctx['_name'] = tpl
             return env.to_json(ctx)
+        if fmt == 'html' and tpl:
+            return render_base(env, context=ctx)
         return render_base(env, ctx)
 
     def wrapper(func):
@@ -127,7 +126,7 @@ def adapt_page():
     return wrapper
 
 
-def render_base(env, body=None):
+def render_base(env, body=None, context=None):
     name = 'all' if env('debug') else 'all.min'
     conf = {
         'debug': env('debug'),
@@ -139,6 +138,7 @@ def render_base(env, body=None):
         'firebug': env('ui_firebug'),
     }
     ctx = {
+        'ctx': json.dumps(context),
         'body': body,
         'cssfile': '/theme/build/%s.css?%s' % (name, env.theme_version),
         'jsfile': '/theme/build/%s.js?%s' % (name, env.theme_version),
